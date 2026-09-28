@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
     country = models.CharField(max_length=100)
     email = models.EmailField(unique=True, blank=True)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
     def __str__(self):

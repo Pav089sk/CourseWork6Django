@@ -1,15 +1,22 @@
 from django.urls import path
-
-# from .views import
+from .views import RecipientCreate, RecipientDetailView, RecipientUpdateView, RecipientDelete, RecipientList, MessageCreate, MessageDetailView, MessageUpdateView, MessageList, MessageDelete, MessengerUpdateView, MessengerDelete, MessengerCreate, MessengerList, MessengerDetailView
 app_name = 'mailing'
 
 urlpatterns = [
-    # path('home/', ProductListView.as_view(), name='home'),
-    # path('contacts/', ContactView.as_view(), name='contacts'),
-    # path('product/<int:pk>/',ProductDetailView.as_view(), name='product_detail'),
-    # path('product/new/',ProductCreateView.as_view(), name='product_create'),
-    # path('product/<int:pk>/edit/',ProductUpdateView.as_view(), name='product_update'),
-    # path('product/<int:pk>/delete/', ProductDeleteView.as_view(), name='product_delete'),
-    # path('product/<int:pk>/public/', UpdatePublicationStatus.as_view(), name='product_publication'),
-    # path('category_list/<int:category_id>/', ProductByCategory.as_view(), name='product_by_category'),
+    path('recipients/', RecipientList.as_view(), name='recipient_list'),
+    path('recipient/<int:pk>/', RecipientDetailView.as_view(), name='recipient_detail'),
+    path('recipient/new/', RecipientCreate.as_view(), name='recipient_create'),
+    path('recipient/<int:pk>/edit/', RecipientUpdateView.as_view(), name='recipient_update'),
+    path('recipient/<int:pk>/delete/', RecipientDelete.as_view(), name='recipient_delete'),
+    path('messages/', MessageList.as_view(), name='message_list'),
+    path('message/<int:pk>/', MessageDetailView.as_view(), name='message_detail'),
+    path('message/new/', MessageCreate.as_view(), name='message_create'),
+    path('message/<int:pk>/edit/', MessageUpdateView.as_view(), name='message_update'),
+    path('message/<int:pk>/delete/', MessageDelete.as_view(), name='message_delete'),
+    path('messenger/', MessengerList.as_view(), name='list_messenger'),
+    path('messenger/<int:pk>/', MessengerDetailView.as_view(), name='messenger_detail'),
+    path('messenger/new/', MessengerCreate.as_view(), name='messenger_create'),
+    path('messenger/<int:pk>/edit/', MessengerUpdateView.as_view(), name='messenger_update'),
+    path('messenger/<int:pk>/delete/', MessengerDelete.as_view(), name='messenger_delete'),
+
 ]
