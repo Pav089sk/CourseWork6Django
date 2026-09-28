@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали рассылки</title>
+</head>
+<body>
+    <!-- Сюда потом выведем данные рассылки (тема, даты и т.д.) -->
+    <h1>Рассылка №{{ messenger.pk }}</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding: 10px; margin: 10px 0; border-radius: 4px; color: white;">
+                {% if message.tags == 'error' %}
+                    <p style="background-color: #dc3545;">❌ {{ message }}</p>
+                {% else %}
+                    <p style="background-color: #28a745;">✅ {{ message }}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- ТВОЯ КНОПКА (теперь строго внутри body) -->
+    <form action="{% url 'send_mail' messenger.pk %}" method="post">
+        {% csrf_token %}
+        <button type="submit">ТЕСТ: Отправить рассылку</button>
+    </form>
+</body>
+</html>

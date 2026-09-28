@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import RecipientCreate, RecipientDetailView, RecipientUpdateView, RecipientDelete, RecipientList, MessageCreate, MessageDetailView, MessageUpdateView, MessageList, MessageDelete, MessengerUpdateView, MessengerDelete, MessengerCreate, MessengerList, MessengerDetailView
+from .views import HomeView, RecipientCreate, RecipientDetailView, RecipientUpdateView, RecipientDelete, RecipientList, MessageCreate, MessageDetailView, MessageUpdateView, MessageList, MessageDelete, MessengerUpdateView, MessengerDelete, MessengerCreate, MessengerList, MessengerDetailView, AttemptDetailView, SendMailView
 app_name = 'mailing'
 
 urlpatterns = [
+    path('home/', HomeView.as_view(), name='home'),
     path('recipients/', RecipientList.as_view(), name='recipient_list'),
     path('recipient/<int:pk>/', RecipientDetailView.as_view(), name='recipient_detail'),
     path('recipient/new/', RecipientCreate.as_view(), name='recipient_create'),
@@ -18,5 +19,7 @@ urlpatterns = [
     path('messenger/new/', MessengerCreate.as_view(), name='messenger_create'),
     path('messenger/<int:pk>/edit/', MessengerUpdateView.as_view(), name='messenger_update'),
     path('messenger/<int:pk>/delete/', MessengerDelete.as_view(), name='messenger_delete'),
+    path('attempt/<int:pk>/', AttemptDetailView.as_view(), name='attempt_detail'),
+    path('messenger/<int:pk>/send/', SendMailView.as_view(), name='send_mail'),
 
 ]

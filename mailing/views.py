@@ -1,13 +1,18 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import ListView, DetailView
-from .models import Recipient, Message, Messenger
+from django.views.generic import ListView, DetailView, View, TemplateView
+from .models import Recipient, Message, Messenger, Attempt
 from django.urls import reverse_lazy
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 
 class RecipientCreate(CreateView):
     model = Recipient
     fields = ['email', 'first_name', 'last_name', 'middle_name', 'comment']
-    template_name = 'recipient_form.html'
-    success_url = reverse_lazy('recipient_list')
+    template_name = 'mailing/recipient_form.html'
+    success_url = reverse_lazy('mailing:recipient_list')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -123,7 +128,7 @@ class MessengerDetailView(DetailView):
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
-        obj.update_status()  # ← пересчёт и сохранение статуса
+        obj.update_status()
         return obj
 
 class MessengerUpdateView(UpdateView):
@@ -144,3 +149,40 @@ class MessengerDelete(DeleteView):
 
     def get_queryset(self):
         return Messenger.objects.filter(user=self.request.user)
+
+class AttemptDetailView(DetailView):
+    model = Attempt
+    template_name = 'attempt_detail.html'
+    context_object_name = 'attempt'
+
+class SendMailView(View):
+    def post(self,request, *args, **kwargs ):
+        messenger = get_object_or_404(Messenger, pk=self.kwargs['pk'], user=self.request.user)
+        now = timezone.now()
+        if not (messenger.start_time <= now <= messenger.end_time):
+            messages.error(request, 'Ошибка: отправка возможна только между start_time и end_time.')
+            return redirect('messenger_detail', pk=messenger.pk)
+
+        for recipient in messenger.recipients.all():
+            try:
+                send_mail(messenger.message.theme, messenger.message.content, settings.DEFAULT_FROM_EMAIL, [recipient.email])
+                Attempt.objects.create(status=Attempt.SUCCESS, server_response='Отправлено', mailing=messenger, recipient=recipient)
+            except Exception as e:
+                Attempt.objects.create(status=Attempt.FAIL, server_response=str(e), mailing=messenger, recipient=recipient)
+        messages.success(request, f"Ты нажал кнопку! Рассылка {messenger.id} найдена.")
+        return redirect('messenger_detail', pk=messenger.pk)
+
+class HomeView(TemplateView):
+    template_name = 'mailing/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        now = timezone.now()
+
+        context['total_mailings'] = Messenger.objects.count()
+        context['active_mailings'] = Messenger.objects.filter(
+            start_time__lte=now,
+            end_time__gte=now
+        ).count()
+        context['unique_recipients'] = Recipient.objects.count()
+        return context
