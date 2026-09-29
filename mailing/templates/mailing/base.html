@@ -19,6 +19,7 @@
                 <a href="{% url 'mailing:message_list' %}">Сообщения</a> |
                 <a href="{% url 'mailing:list_messenger' %}">Рассылки</a> |
                 <a href="{% url 'mailing:messenger_create' %}">Создать рассылку</a> |
+                <a href="{% url 'mailing:stats' %}">Статистика</a> |
                 <form action="{% url 'users:logout' %}" method="post" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" style="background:none; border:none; color:red; cursor:pointer;">Выйти</button>

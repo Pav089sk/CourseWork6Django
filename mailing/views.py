@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView, View, TemplateView
 from .models import Recipient, Message, Messenger, Attempt
@@ -204,3 +205,15 @@ class HomeView(TemplateView):
         ).count()
         context['unique_recipients'] = Recipient.objects.count()
         return context
+
+
+def stats_view(request):
+    user_messengers = Messenger.objects.filter(user=request.user)
+    attempts = Attempt.objects.filter(mailing__in=user_messengers)
+
+    context = {
+        'total_messages': attempts.count(),
+        'successful': attempts.filter(status=Attempt.SUCCESS).count(),
+        'failed': attempts.filter(status=Attempt.FAIL).count(),
+    }
+    return render(request, 'mailing/stats.html', context)
