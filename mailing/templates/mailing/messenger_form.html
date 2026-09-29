@@ -1,0 +1,13 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}{{ title|default:'Новая рассылка' }}{% endblock %}
+
+{% block content %}
+<h1>{{ title|default:'Новая рассылка' }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">{{ submit_label|default:'Сохранить' }}</button>
+  <a href="{% url 'mailing:list_messenger' %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% endblock %}

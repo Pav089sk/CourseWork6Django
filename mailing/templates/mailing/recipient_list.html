@@ -22,7 +22,7 @@
                 {% for recipient in recipients %}
                 <tr>
                     <td>{{ recipient.email }}</td>
-                    <td>{{ recipient.first_name }} {{ recipient.last_name }} {{ recipient.middle_name|default:'' }}</td>
+                    <td>{{ recipient.last_name }} {{ recipient.first_name }} {{ recipient.middle_name|default:'' }}</td>
                     <td>{{ recipient.comment|default:'—' }}</td>
                     <td>
                         <a href="{% url 'mailing:recipient_detail' pk=recipient.pk %}">Детали</a> |

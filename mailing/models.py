@@ -49,12 +49,6 @@ class Messenger(models.Model):
     recipients = models.ManyToManyField(Recipient)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
 
-    def clean(self):
-        if self.start_time < timezone.now():
-            raise ValidationError('Дата начала не может быть в прошлом')
-        if self.start_time >= self.end_time:
-            raise ValidationError('Дата начала должна быть раньше даты окончания')
-
     def update_status(self):
         current_date = timezone.now()
         old_status = self.status
@@ -82,6 +76,7 @@ class Attempt(models.Model):
     status = models.CharField(max_length=10, choices=ATTEMPT_STATUS)
     server_response = models.TextField(blank=True, null=True)
     mailing = models.ForeignKey(Messenger, on_delete=models.CASCADE, null=True)
+    recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'{self.mailing} — {self.status} — {self.attempt_time}'
