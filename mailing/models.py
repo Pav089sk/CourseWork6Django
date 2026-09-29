@@ -64,6 +64,11 @@ class Messenger(models.Model):
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
+        permissions = [
+            ("can_view_all_mailings", "Может просматривать все рассылки"),
+            ("can_disable_mailings", "Может отключать рассылки"),
+            ("can_view_all_recipients", "Может просматривать всех клиентов"),
+        ]
 
 class Attempt(models.Model):
     SUCCESS = "success"

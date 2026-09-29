@@ -9,8 +9,21 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
 from mailing.forms import MessengerForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from users.models import CustomUser
 
-class RecipientCreate(CreateView):
+
+class NotManagerMixin:
+    """Миксин, запрещающий менеджерам создавать/редактировать/удалять"""
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.groups.filter(name='managers').exists():
+            messages.error(request, 'Менеджерам запрещено это действие.')
+            return redirect('mailing:list_messenger')
+        return super().dispatch(request, *args, **kwargs)
+
+
+
+class RecipientCreate(LoginRequiredMixin, NotManagerMixin, CreateView):
     model = Recipient
     fields = ['email', 'first_name', 'last_name', 'middle_name', 'comment']
     template_name = 'mailing/recipient_form.html'
@@ -20,23 +33,30 @@ class RecipientCreate(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-class RecipientList(ListView):
+
+class RecipientList(LoginRequiredMixin, ListView):
     model = Recipient
     template_name = 'mailing/recipient_list.html'
     context_object_name = 'recipients'
 
     def get_queryset(self):
+        if self.request.user.has_perm('mailing.can_view_all_recipients'):
+            return Recipient.objects.all()
         return Recipient.objects.filter(user=self.request.user)
 
-class RecipientDetailView(DetailView):
+
+class RecipientDetailView(LoginRequiredMixin, DetailView):
     model = Recipient
     template_name = 'mailing/recipient_detail.html'
     context_object_name = 'recipient'
 
     def get_queryset(self):
+        if self.request.user.has_perm('mailing.can_view_all_recipients'):
+            return Recipient.objects.all()
         return Recipient.objects.filter(user=self.request.user)
 
-class RecipientUpdateView(UpdateView):
+
+class RecipientUpdateView(LoginRequiredMixin, NotManagerMixin, UpdateView):
     model = Recipient
     fields = ['email', 'first_name', 'last_name', 'middle_name', 'comment']
     template_name = 'mailing/recipient_form.html'
@@ -47,7 +67,8 @@ class RecipientUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('mailing:recipient_detail', kwargs={'pk': self.object.pk})
 
-class RecipientDelete(DeleteView):
+
+class RecipientDelete(LoginRequiredMixin, NotManagerMixin, DeleteView):
     model = Recipient
     template_name = 'mailing/recipient_confirm_delete.html'
     success_url = reverse_lazy('mailing:recipient_list')
@@ -56,7 +77,8 @@ class RecipientDelete(DeleteView):
         return Recipient.objects.filter(user=self.request.user)
 
 
-class MessageCreate(CreateView):
+
+class MessageCreate(LoginRequiredMixin, NotManagerMixin, CreateView):
     model = Message
     fields = ['theme', 'content']
     template_name = 'mailing/message_form.html'
@@ -66,7 +88,8 @@ class MessageCreate(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-class MessageList(ListView):
+
+class MessageList(LoginRequiredMixin, ListView):
     model = Message
     template_name = 'mailing/message_list.html'
     context_object_name = 'messages'
@@ -74,7 +97,8 @@ class MessageList(ListView):
     def get_queryset(self):
         return Message.objects.filter(user=self.request.user)
 
-class MessageDetailView(DetailView):
+
+class MessageDetailView(LoginRequiredMixin, DetailView):
     model = Message
     template_name = 'mailing/message_detail.html'
     context_object_name = 'message'
@@ -82,7 +106,8 @@ class MessageDetailView(DetailView):
     def get_queryset(self):
         return Message.objects.filter(user=self.request.user)
 
-class MessageUpdateView(UpdateView):
+
+class MessageUpdateView(LoginRequiredMixin, NotManagerMixin, UpdateView):
     model = Message
     fields = ['theme', 'content']
     template_name = 'mailing/message_form.html'
@@ -93,7 +118,8 @@ class MessageUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('mailing:message_detail', kwargs={'pk': self.object.pk})
 
-class MessageDelete(DeleteView):
+
+class MessageDelete(LoginRequiredMixin, NotManagerMixin, DeleteView):
     model = Message
     template_name = 'mailing/message_confirm_delete.html'
     success_url = reverse_lazy('mailing:message_list')
@@ -102,7 +128,7 @@ class MessageDelete(DeleteView):
         return Message.objects.filter(user=self.request.user)
 
 
-class MessengerCreate(CreateView):
+class MessengerCreate(LoginRequiredMixin, NotManagerMixin, CreateView):
     model = Messenger
     form_class = MessengerForm
     template_name = 'mailing/messenger_form.html'
@@ -112,20 +138,26 @@ class MessengerCreate(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-class MessengerList(ListView):
+
+class MessengerList(LoginRequiredMixin, ListView):
     model = Messenger
     template_name = 'mailing/messenger_list.html'
     context_object_name = 'messengers'
 
     def get_queryset(self):
+        if self.request.user.has_perm('mailing.can_view_all_mailings'):
+            return Messenger.objects.all()
         return Messenger.objects.filter(user=self.request.user)
 
-class MessengerDetailView(DetailView):
+
+class MessengerDetailView(LoginRequiredMixin, DetailView):
     model = Messenger
     template_name = 'mailing/messenger_detail.html'
     context_object_name = 'messenger'
 
     def get_queryset(self):
+        if self.request.user.has_perm('mailing.can_view_all_mailings'):
+            return Messenger.objects.all()
         return Messenger.objects.filter(user=self.request.user)
 
     def get_object(self, queryset=None):
@@ -133,7 +165,8 @@ class MessengerDetailView(DetailView):
         obj.update_status()
         return obj
 
-class MessengerUpdateView(UpdateView):
+
+class MessengerUpdateView(LoginRequiredMixin, NotManagerMixin, UpdateView):
     model = Messenger
     form_class = MessengerForm
     template_name = 'mailing/messenger_form.html'
@@ -144,7 +177,8 @@ class MessengerUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('mailing:messenger_detail', kwargs={'pk': self.object.pk})
 
-class MessengerDelete(DeleteView):
+
+class MessengerDelete(LoginRequiredMixin, NotManagerMixin, DeleteView):
     model = Messenger
     template_name = 'mailing/messenger_confirm_delete.html'
     success_url = reverse_lazy('mailing:list_messenger')
@@ -152,13 +186,15 @@ class MessengerDelete(DeleteView):
     def get_queryset(self):
         return Messenger.objects.filter(user=self.request.user)
 
-class AttemptDetailView(DetailView):
+
+class AttemptDetailView(LoginRequiredMixin, DetailView):
     model = Attempt
     template_name = 'mailing/attempt_detail.html'
     context_object_name = 'attempt'
 
-class SendMailView(View):
-    def post(self,request, *args, **kwargs ):
+
+class SendMailView(LoginRequiredMixin, NotManagerMixin, View):
+    def post(self, request, *args, **kwargs):
         messenger = get_object_or_404(Messenger, pk=self.kwargs['pk'], user=self.request.user)
         now = timezone.now()
         if not (messenger.start_time <= now <= messenger.end_time):
@@ -191,6 +227,8 @@ class SendMailView(View):
         messages.success(request, f"Рассылка №{messenger.pk} запущена. Письма отправлены.")
         return redirect('mailing:messenger_detail', pk=messenger.pk)
 
+
+
 class HomeView(TemplateView):
     template_name = 'mailing/home.html'
 
@@ -217,3 +255,32 @@ def stats_view(request):
         'failed': attempts.filter(status=Attempt.FAIL).count(),
     }
     return render(request, 'mailing/stats.html', context)
+
+
+class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = 'users.can_view_users'
+    model = CustomUser
+    template_name = 'mailing/user_list.html'
+    context_object_name = 'users'
+
+
+class ToggleUserBlockView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = 'users.can_block_users'
+
+    def post(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+        user.is_active = not user.is_active
+        user.save()
+        messages.success(request, f'Пользователь {user.email} {"разблокирован" if user.is_active else "заблокирован"}.')
+        return redirect('mailing:user_list')
+
+
+class DisableMessengerView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = 'mailing.can_disable_mailings'
+
+    def post(self, request, pk):
+        messenger = get_object_or_404(Messenger, pk=pk)
+        messenger.status = Messenger.FINISHED
+        messenger.save()
+        messages.success(request, f'Рассылка №{messenger.pk} отключена.')
+        return redirect('mailing:list_messenger')

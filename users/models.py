@@ -16,3 +16,8 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
+    class Meta:
+        permissions = [
+            ("can_view_users", "Может просматривать пользователей"),
+            ("can_block_users", "Может блокировать пользователей"),
+        ]

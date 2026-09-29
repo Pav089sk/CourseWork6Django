@@ -13,7 +13,7 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from django.utils.http import urlsafe_base64_decode
 from users.models import CustomUser
-
+import random
 
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
@@ -25,6 +25,11 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         user = form.save(commit=False)
+        base_username = user.email.split('@')[0]
+        username = base_username
+        while CustomUser.objects.filter(username=username).exists():
+            username = f"{base_username}{random.randint(100, 999)}"
+        user.username = username
         user.is_active = False
         user.save()
         uid = urlsafe_base64_encode(force_bytes(user.pk))

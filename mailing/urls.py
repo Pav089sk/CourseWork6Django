@@ -1,6 +1,5 @@
 from django.urls import path
-from django.contrib.auth import views
-from mailing.views import stats_view, HomeView, RecipientCreate, RecipientDetailView, RecipientUpdateView, RecipientDelete, RecipientList, MessageCreate, MessageDetailView, MessageUpdateView, MessageList, MessageDelete, MessengerUpdateView, MessengerDelete, MessengerCreate, MessengerList, MessengerDetailView, AttemptDetailView, SendMailView
+from mailing.views import UserListView, ToggleUserBlockView, DisableMessengerView, stats_view, HomeView, RecipientCreate, RecipientDetailView, RecipientUpdateView, RecipientDelete, RecipientList, MessageCreate, MessageDetailView, MessageUpdateView, MessageList, MessageDelete, MessengerUpdateView, MessengerDelete, MessengerCreate, MessengerList, MessengerDetailView, AttemptDetailView, SendMailView
 
 app_name = 'mailing'
 
@@ -24,5 +23,7 @@ urlpatterns = [
     path('attempt/<int:pk>/', AttemptDetailView.as_view(), name='attempt_detail'),
     path('messenger/<int:pk>/send/', SendMailView.as_view(), name='send_mail'),
     path('stats/', stats_view, name='stats'),
-
+    path('users/', UserListView.as_view(), name='user_list'),
+    path('users/<int:pk>/toggle/', ToggleUserBlockView.as_view(), name='toggle_user_block'),
+    path('messenger/<int:pk>/disable/', DisableMessengerView.as_view(), name='disable_messenger'),
 ]

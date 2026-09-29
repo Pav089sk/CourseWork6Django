@@ -35,9 +35,12 @@
     Отправить рассылку сейчас
   </button>
 </form>
-
-<hr>
-
+      {% if perms.mailing.can_disable_mailings %}
+        <form method="post" action="{% url 'mailing:disable_messenger' messenger.pk %}">
+          {% csrf_token %}
+          <button type="submit">Отключить рассылку</button>
+        </form>
+      {% endif %}
 <h2>История попыток отправки</h2>
 {% if messenger.attempt_set.all %}
   <table class="table table-striped">

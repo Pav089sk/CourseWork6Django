@@ -8,6 +8,20 @@
     <title>{% block title %}Сервис рассылок{% endblock %}</title>
 </head>
 <body>
+        {% if messages %}
+          {% for message in messages %}
+            <div style="padding: 10px; margin: 10px 0; border-radius: 5px;
+                 {% if message.tags == 'error' %}
+                   background: #ffebee; color: #c62828; border: 1px solid #ef9a9a;
+                 {% elif message.tags == 'success' %}
+                   background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7;
+                 {% else %}
+                   background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9;
+                 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
     <header style="padding: 10px; border-bottom: 1px solid #ccc; margin-bottom: 20px;">
         <h1>Сервис управления рассылками</h1>
 
@@ -26,7 +40,7 @@
                 </form>
             {% else %}
                 <a href="{% url 'users:login' %}">Войти</a> |
-                <a href="users:register">Регистрация</a>
+                <a href="{% url 'users:register' %}">Регистрация</a>
             {% endif %}
     </nav>
     </header>
