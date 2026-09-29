@@ -1,0 +1,35 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Шаблоны сообщений{% endblock %}
+
+{% block content %}
+<h2>Шаблоны сообщений</h2>
+<a href="{% url 'mailing:message_create' %}" class="btn btn-success btn-sm mb-3">+ Создать сообщение</a>
+
+{% if messages %}
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Тема</th>
+        <th>Текст</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for message in messages %}
+      <tr>
+        <td>{{ message.theme }}</td>
+        <td>{{ message.content|truncatechars:80 }}</td>
+        <td>
+          <a href="{% url 'mailing:message_detail' pk=message.pk %}">Просмотр</a> |
+          <a href="{% url 'mailing:message_update' pk=message.pk %}">Редактировать</a> |
+          <a href="{% url 'mailing:message_delete' pk=message.pk %}" style="color:red;">Удалить</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Сообщений пока нет. Создайте первое!</p>
+{% endif %}
+{% endblock %}

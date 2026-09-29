@@ -3,10 +3,21 @@ from .models import Messenger
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
+
 class MessengerForm(forms.ModelForm):
     class Meta:
         model = Messenger
         fields = ['start_time', 'end_time', 'message', 'recipients']
+        widgets = {
+            'start_time': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M',
+            ),
+            'end_time': forms.DateTimeInput(
+                attrs={'type': 'datetime-local', 'class': 'form-control'},
+                format='%Y-%m-%dT%H:%M',
+            ),
+        }
 
     def clean(self):
         cleaned_data = super().clean()

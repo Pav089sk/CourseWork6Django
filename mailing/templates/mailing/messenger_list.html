@@ -1,0 +1,39 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Рассылки{% endblock %}
+
+{% block content %}
+<h2>Рассылки</h2>
+<a href="{% url 'mailing:messenger_create' %}" class="btn btn-success btn-sm mb-3">+ Создать рассылку</a>
+
+{% if messengers %}
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Статус</th>
+        <th>Период отправки</th>
+        <th>Сообщение</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for messenger in messengers %}
+      <tr>
+        <td>{{ messenger.id }}</td>
+        <td>{{ messenger.get_status_display }}</td>
+        <td>{{ messenger.start_time|date:"d.m.Y H:i" }} — {{ messenger.end_time|date:"d.m.Y H:i" }}</td>
+        <td>{{ messenger.message.theme|default:'—' }}</td>
+        <td>
+          <a href="{% url 'mailing:messenger_detail' pk=messenger.pk %}">Просмотр</a> |
+          <a href="{% url 'mailing:messenger_update' pk=messenger.pk %}">Редактировать</a> |
+          <a href="{% url 'mailing:messenger_delete' pk=messenger.pk %}" style="color:red;">Удалить</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Рассылок пока нет. Создайте первую!</p>
+{% endif %}
+{% endblock %}

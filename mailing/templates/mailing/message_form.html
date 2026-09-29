@@ -3,11 +3,32 @@
 {% block title %}{{ title|default:'Новое письмо' }}{% endblock %}
 
 {% block content %}
-<h1>{{ title|default:'Новое письмо' }}</h1>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-primary">{{ submit_label|default:'Сохранить' }}</button>
-  <a href="{% url 'mailing:list_messenger' %}" class="btn btn-secondary">Отмена</a>
-</form>
+<div class="card p-4 shadow-sm">
+    <h2 class="card-title">{{ title|default:'Новое письмо' }}</h2>
+    <hr>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Тема письма (theme)</label>
+            {{ form.theme }}
+            {% if form.theme.errors %}
+                <div class="text-danger small">{{ form.theme.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Текст письма (content)</label>
+            {{ form.content }}
+            {% if form.content.errors %}
+                <div class="text-danger small">{{ form.content.errors }}</div>
+            {% endif %}
+            <small class="text-muted">Поддерживается обычный текст. HTML не требуется.</small>
+        </div>
+
+        <button type="submit" class="btn btn-success">Сохранить шаблон</button>
+        <a href="{% url 'mailing:message_list' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
 {% endblock %}

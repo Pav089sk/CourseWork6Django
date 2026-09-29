@@ -61,7 +61,9 @@ class Messenger(models.Model):
         if new_status != old_status:
             self.status = new_status
             self.save()
-
+    class Meta:
+        verbose_name = 'Рассылка'
+        verbose_name_plural = 'Рассылки'
 
 class Attempt(models.Model):
     SUCCESS = "success"

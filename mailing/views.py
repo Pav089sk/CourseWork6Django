@@ -187,7 +187,7 @@ class SendMailView(View):
                     recipient=recipient
                 ))
         Attempt.objects.bulk_create(attempts)
-        messages.success(request, f"Ты нажал кнопку! Рассылка {messenger.id} найдена.")
+        messages.success(request, f"Рассылка №{messenger.pk} запущена. Письма отправлены.")
         return redirect('mailing:messenger_detail', pk=messenger.pk)
 
 class HomeView(TemplateView):
