@@ -11,7 +11,8 @@ from django.conf import settings
 from mailing.forms import MessengerForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from users.models import CustomUser
-
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 class NotManagerMixin:
     """Миксин, запрещающий менеджерам создавать/редактировать/удалять"""
@@ -228,7 +229,7 @@ class SendMailView(LoginRequiredMixin, NotManagerMixin, View):
         return redirect('mailing:messenger_detail', pk=messenger.pk)
 
 
-
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class HomeView(TemplateView):
     template_name = 'mailing/home.html'
 
