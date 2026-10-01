@@ -1,0 +1,39 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Статистика рассылок{% endblock %}
+
+{% block content %}
+    <h2>Панель управления рассылками</h2>
+
+    <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+        <div style="padding: 15px; border: 1px solid #ccc; border-radius: 8px; min-width: 200px;">
+            <h3>Всего рассылок</h3>
+            <p style="font-size: 1.5em; font-weight: bold; color: #333;">
+                {{ total_mailings }}
+            </p>
+        </div>
+
+        <div style="padding: 15px; border: 1px solid #ccc; border-radius: 8px; min-width: 200px; background: #f0f8ff;">
+            <h3>Активных рассылок</h3>
+            <p style="font-size: 1.5em; font-weight: bold; color: #0056b3;">
+                {{ active_mailings }}
+            </p>
+        </div>
+
+        <div style="padding: 15px; border: 1px solid #ccc; border-radius: 8px; min-width: 200px;">
+            <h3>Получателей</h3>
+            <p style="font-size: 1.5em; font-weight: bold; color: #2e7d32;">
+                {{ unique_recipients }}
+            </p>
+        </div>
+    </div>
+
+    <hr>
+
+    <p>Быстрый доступ:</p>
+    <ul>
+        <li><a href="{% url 'mailing:recipient_list' %}">Список получателей</a></li>
+        <li><a href="{% url 'mailing:message_list' %}">Шаблоны сообщений</a></li>
+        <li><a href="{% url 'mailing:list_messenger' %}">Рассылки</a></li>
+    </ul>
+{% endblock %}

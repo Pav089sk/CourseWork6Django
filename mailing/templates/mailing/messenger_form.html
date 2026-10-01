@@ -1,0 +1,50 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}{{ title|default:'Новая рассылка' }}{% endblock %}
+
+{% block content %}
+<div class="card p-4 shadow-sm">
+    <h2 class="card-title">{{ title|default:'Новая рассылка' }}</h2>
+    <hr>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Дата и время начала</label>
+            {{ form.start_time }}
+            {% if form.start_time.errors %}
+                <div class="text-danger small">{{ form.start_time.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Дата и время окончания</label>
+            {{ form.end_time }}
+            {% if form.end_time.errors %}
+                <div class="text-danger small">{{ form.end_time.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Шаблон сообщения</label>
+            {{ form.message }}
+            {% if form.message.errors %}
+                <div class="text-danger small">{{ form.message.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Получатели</label>
+            {{ form.recipients }}
+            <small class="text-muted">Зажмите Ctrl (Cmd на Mac), чтобы выбрать нескольких.</small>
+            {% if form.recipients.errors %}
+                <div class="text-danger small">{{ form.recipients.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-success">Сохранить рассылку</button>
+        <a href="{% url 'mailing:list_messenger' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

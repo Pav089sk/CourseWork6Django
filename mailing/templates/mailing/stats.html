@@ -1,0 +1,22 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+<h2>Статистика рассылок</h2>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+  <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px;">
+    <h3>Всего отправлено сообщений</h3>
+    <p style="font-size: 1.8em; font-weight: bold;">{{ total_messages }}</p>
+  </div>
+  <div style="border: 1px solid #4caf50; padding: 15px; border-radius: 8px; background: #e8f5e9;">
+    <h3 style="color: green;">Успешных попыток</h3>
+    <p style="font-size: 1.8em; font-weight: bold; color: green;">{{ successful }}</p>
+  </div>
+  <div style="border: 1px solid #f44336; padding: 15px; border-radius: 8px; background: #ffebee;">
+    <h3 style="color: red;">Неуспешных попыток</h3>
+    <p style="font-size: 1.8em; font-weight: bold; color: red;">{{ failed }}</p>
+  </div>
+</div>
+
+<a href="{% url 'mailing:home' %}">Вернуться на главную</a>
+{% endblock %}

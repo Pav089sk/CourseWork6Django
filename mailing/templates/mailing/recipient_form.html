@@ -1,0 +1,42 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Добавить клиента{% endblock %}
+
+{% block content %}
+    <h2>Добавить нового получателя рассылки</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 15px;">
+            <label>Email (уникальный):</label><br>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <small style="color: red;">{{ form.email.errors }}</small>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Имя:</label><br>
+            {{ form.first_name }}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Фамилия:</label><br>
+            {{ form.last_name }}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Отчество (опционально):</label><br>
+            {{ form.middle_name }}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label>Комментарий:</label><br>
+            {{ form.comment }}
+        </div>
+
+        <button type="submit" style="padding: 8px 16px; background: #28a745; color: white; border: none; cursor: pointer;">Сохранить</button>
+        <a href="{% url 'mailing:recipient_list' %}" style="margin-left: 10px;">Отмена</a>
+    </form>
+{% endblock %}

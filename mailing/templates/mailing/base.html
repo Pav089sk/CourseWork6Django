@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <title>{% block title %}Сервис рассылок{% endblock %}</title>
+</head>
+<body>
+        {% if messages %}
+          {% for message in messages %}
+            <div style="padding: 10px; margin: 10px 0; border-radius: 5px;
+                 {% if message.tags == 'error' %}
+                   background: #ffebee; color: #c62828; border: 1px solid #ef9a9a;
+                 {% elif message.tags == 'success' %}
+                   background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7;
+                 {% else %}
+                   background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9;
+                 {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+    <header style="padding: 10px; border-bottom: 1px solid #ccc; margin-bottom: 20px;">
+        <h1>Сервис управления рассылками</h1>
+
+       <nav>
+            {% if user.is_authenticated %}
+                <span>Привет, {{ user.first_name|default:user.email  }}!</span> |
+                <a href="{% url 'mailing:home' %}">Главная</a> |
+                <a href="{% url 'mailing:recipient_list' %}">Клиенты</a> |
+                <a href="{% url 'mailing:message_list' %}">Сообщения</a> |
+                <a href="{% url 'mailing:list_messenger' %}">Рассылки</a> |
+                <a href="{% url 'mailing:messenger_create' %}">Создать рассылку</a> |
+                <a href="{% url 'mailing:stats' %}">Статистика</a> |
+                <form action="{% url 'users:logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none; border:none; color:red; cursor:pointer;">Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'users:login' %}">Войти</a> |
+                <a href="{% url 'users:register' %}">Регистрация</a>
+            {% endif %}
+    </nav>
+    </header>
+
+    <main class="container mt-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="margin-top: 30px; padding: 10px; color: #777;">
+        &copy; 2026 Сервис рассылок.
+    </footer>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

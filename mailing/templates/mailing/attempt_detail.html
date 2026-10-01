@@ -1,0 +1,38 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Попытка отправки №{{ attempt.id }}{% endblock %}
+
+{% block content %}
+<div class="card p-4 shadow-sm">
+  <h2 class="card-title">Попытка отправки</h2>
+  <hr>
+
+  <dl class="row">
+    <dt class="col-sm-3">Время попытки</dt>
+    <dd class="col-sm-9">{{ attempt.attempt_time|date:"d.m.Y H:i:s" }}</dd>
+
+    <dt class="col-sm-3">Статус</dt>
+    <dd class="col-sm-9">
+      {% if attempt.status == 'success' %}
+        <span class="badge bg-success">Успешно</span>
+      {% else %}
+        <span class="badge bg-danger">Не успешно</span>
+      {% endif %}
+    </dd>
+
+    <dt class="col-sm-3">Получатель</dt>
+    <dd class="col-sm-9">
+      {% if attempt.recipient %}
+        {{ attempt.recipient.last_name }} {{ attempt.recipient.first_name }} ({{ attempt.recipient.email }})
+      {% else %}
+        <em>Без получателя</em>
+      {% endif %}
+    </dd>
+
+    <dt class="col-sm-3">Ответ сервера</dt>
+    <dd class="col-sm-9"><code>{{ attempt.server_response|truncatechars:200 }}</code></dd>
+  </dl>
+
+  <a href="{% url 'mailing:messenger_detail' pk=attempt.messenger.pk %}" class="btn btn-secondary">Вернуться к рассылке</a>
+</div>
+{% endblock %}

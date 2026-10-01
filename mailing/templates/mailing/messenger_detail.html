@@ -1,0 +1,84 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Рассылка №{{ messenger.id }}{% endblock %}
+
+{% block content %}
+<h1>Рассылка №{{ messenger.id }}</h1>
+
+<div class="card">
+  <div class="card-body">
+    <p><strong>Статус:</strong> {{ messenger.get_status_display }}</p>
+    <p><strong>Период отправки:</strong>
+      {{ messenger.start_time|date:"d.m.Y H:i" }} — {{ messenger.end_time|date:"d.m.Y H:i" }}
+    </p>
+
+    <h3>Сообщение</h3>
+    <p><strong>Тема:</strong> {{ messenger.message.theme }}</p>
+    <p><strong>Текст:</strong></p>
+    <pre>{{ messenger.message.content }}</pre>
+
+    <h3>Получатели</h3>
+    <ul>
+      {% for recipient in messenger.recipients.all %}
+        <li>{{ recipient.last_name }} {{ recipient.first_name }} ({{ recipient.email }})</li>
+      {% endfor %}
+      {% if not messenger.recipients.all %}
+        <li>Нет получателей</li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+
+<form method="post" action="{% url 'mailing:send_mail' messenger.pk %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-primary mb-3 mt-3">
+    Отправить рассылку сейчас
+  </button>
+</form>
+      {% if perms.mailing.can_disable_mailings %}
+        <form method="post" action="{% url 'mailing:disable_messenger' messenger.pk %}">
+          {% csrf_token %}
+          <button type="submit">Отключить рассылку</button>
+        </form>
+      {% endif %}
+<h2>История попыток отправки</h2>
+{% if messenger.attempt_set.all %}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Время</th>
+        <th>Получатель</th>
+        <th>Статус</th>
+        <th>Ответ сервера</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for attempt in messenger.attempt_set.all|dictsortreversed:"attempt_time" %}
+        <tr>
+          <td>{{ attempt.attempt_time|date:"d.m.Y H:i:s" }}</td>
+          <td>
+            {% if attempt.recipient %}
+              {{ attempt.recipient.last_name }} {{ attempt.recipient.first_name }}
+              <br><small>{{ attempt.recipient.email }}</small>
+            {% else %}
+              <em>Без получателя</em>
+            {% endif %}
+          </td>
+          <td>
+            {% if attempt.status == 'success' %}
+              <span class="badge bg-success">Успешно</span>
+            {% else %}
+              <span class="badge bg-danger">Не успешно</span>
+            {% endif %}
+          </td>
+          <td><code>{{ attempt.server_response|truncatechars:60 }}</code></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Пока нет попыток отправки.</p>
+{% endif %}
+
+<a href="{% url 'mailing:list_messenger' %}" class="btn btn-secondary">Назад к списку рассылок</a>
+{% endblock %}

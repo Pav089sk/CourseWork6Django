@@ -1,0 +1,30 @@
+{% extends 'mailing/base.html' %}
+
+{% block title %}Клиент: {{ recipient.email }}{% endblock %}
+
+{% block content %}
+<div class="card p-4 shadow-sm">
+  <h2 class="card-title">Получатель</h2>
+  <hr>
+
+  <dl class="row">
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">{{ recipient.email }}</dd>
+
+    <dt class="col-sm-3">ФИО</dt>
+    <dd class="col-sm-9">
+      {{ recipient.last_name }} {{ recipient.first_name }}
+      {% if recipient.middle_name %} {{ recipient.middle_name }}{% endif %}
+    </dd>
+
+    <dt class="col-sm-3">Комментарий</dt>
+    <dd class="col-sm-9">{{ recipient.comment|default:'—' }}</dd>
+  </dl>
+
+  <div class="d-flex gap-2">
+    <a href="{% url 'mailing:recipient_update' pk=recipient.pk %}" class="btn btn-primary">Редактировать</a>
+    <a href="{% url 'mailing:recipient_delete' pk=recipient.pk %}" class="btn btn-danger">Удалить</a>
+    <a href="{% url 'mailing:recipient_list' %}" class="btn btn-secondary">Назад к списку</a>
+  </div>
+</div>
+{% endblock %}
